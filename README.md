@@ -77,4 +77,19 @@ Nest is [MIT licensed](LICENSE).
 ```bash
 $ docker-compose up -d
 ```
-$ docker-compose 
+
+## Prisma Command
+```bash
+
+# Create and execute migration 
+$ npx prisma migrate dev --name <nome_migrate>
+
+# Pull from database
+npx prisma db pull
+
+# Create prisma client - execute this command every update on schema.prisma
+$ npx prisma generate
+
+# Format models
+$ npx prisma format
+```

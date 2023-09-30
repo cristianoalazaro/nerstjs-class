@@ -1,12 +1,16 @@
-version: '3'
+version: '3.1'
+
 services:
   mysql:
     image: mysql:latest
+    container_name: mysql_container
+    command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_USER:root
-      MYSQL_PASSWORD:fael
-      MYSQL_DATABASE:teste
+      MYSQL_ROOT_PASSWORD: fael
+      #- MYSQL_USER:root
+      #- MYSQL_PASSWORD:fael
+      #- MYSQL_DATABASE:teste
     ports:
-      - '3306:3306'
+      - "3306:3306"
     volumes:
-      - /path/on/host:/var/lib/mysql
+      - ./mysql_data:/var/lib/mysql
