@@ -1,0 +1,12 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_USER:root
+      MYSQL_PASSWORD:fael
+      MYSQL_DATABASE:teste
+    ports:
+      - '3306:3306'
+    volumes:
+      - /path/on/host:/var/lib/mysql
