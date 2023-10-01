@@ -80,6 +80,8 @@ $ docker-compose up -d
 
 ## Prisma Command
 ```bash
+# Create directory and schema prisma
+$ npx prisma init --datasource-provider mysql
 
 # Create and execute migration 
 $ npx prisma migrate dev --name <nome_migrate>
