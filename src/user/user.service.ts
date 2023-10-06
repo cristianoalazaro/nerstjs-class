@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { CreateUserDTO } from './dto/create-user.dto';
 import { PrismaService } from "src/prisma/prisma.service";
-import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
+import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
+import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
 
 @Injectable()
 export class UserService {
@@ -30,6 +30,8 @@ export class UserService {
     };
 
     async getById(id: number) {
+        await this.exists(id);
+
         return await this.prisma.user.findUnique({
             where: {
                 id,
@@ -71,7 +73,11 @@ export class UserService {
     };
 
     async exists(id: number) {
-        if (!await this.getById(id)) {
+        if (!await this.prisma.user.count({
+            where: {
+                id,
+            }
+        })) {
             throw new NotFoundException(`User ${id} not exist!`);
         }
     }
