@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
-  ParseIntPipe,
   Patch,
   Post,
   Put
@@ -13,6 +11,7 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePatchUserDTO } from './dto/update-patch-user.dto';
 import { UpdatePutUserDTO } from './dto/update-put-user.dto';
 import { UserService } from './user.service';
+import { ParamId } from 'src/decorators/param-id.decorator';
 
 //@UseInterceptors(LogInterceptor)
 @Controller('users')
@@ -31,14 +30,14 @@ export class UserController {
   }
 
   @Get(':id')
-  async getOne(@Param('id', ParseIntPipe) id: number) {
+  async getOne(@ParamId() id: number) {
     return this.userService.getById(id);
   }
 
   @Put(':id')
   async update(
     @Body() body: UpdatePutUserDTO,
-    @Param('id', ParseIntPipe) id: number,
+    @ParamId() id: number,
   ) {
     return await this.userService.update(body, id);
   }
@@ -46,13 +45,13 @@ export class UserController {
   @Patch(':id')
   async updatePartial(
     @Body() body: UpdatePatchUserDTO,
-    @Param('id', ParseIntPipe) id,
+    @ParamId() id: number,
   ) {
     return this.userService.updatePartial(body, id);
   }
 
   @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: number) {
+  async delete(@ParamId() id: number) {
     return await this.userService.delete(id);
   }
 }
