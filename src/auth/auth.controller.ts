@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { AuthLoginDTO } from "./sto/auth-login.dto";
-import { AuthRegisterDTO } from "./sto/auth-register.dto";
-import { AuthForgetDTO } from "./sto/auth-forget.dto";
-import { AuthResetDTO } from "./sto/auth-reset.dto";
+import { AuthLoginDTO } from "./dto/auth-login.dto";
+import { AuthRegisterDTO } from "./dto/auth-register.dto";
+import { AuthForgetDTO } from "./dto/auth-forget.dto";
+import { AuthResetDTO } from "./dto/auth-reset.dto";
 import { UserService } from "src/user/user.service";
 import { AuthService } from "./auth.service";
 
@@ -20,7 +20,7 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() body: AuthRegisterDTO) {
-        return this.userService.create(body);
+        return this.authService.register(body);
     };
 
     @Post('forget')
