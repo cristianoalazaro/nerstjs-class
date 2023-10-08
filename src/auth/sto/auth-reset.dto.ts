@@ -9,7 +9,7 @@ export class AuthResetDTO {
         minSymbols: 0,
         minUppercase: 0
     })
-    newPassword: string;
+    password: string;
 
     @IsJWT()
     token: string;
