@@ -9,19 +9,14 @@ export class UserService {
     constructor( private readonly prisma: PrismaService ) {}
 
     async create(data: CreateUserDTO) {
-        const { name, email, password, birthAt } = data;
+        //const { name, email, password, birthAt, role } = data;
         let date: Date;
         if (data.birthAt) {
-            date = new Date(birthAt)
+            date = new Date(data.birthAt)
         }
 
         return await this.prisma.user.create({
-            data: {
-                name,
-                email,
-                password,
-                birthAt: date,
-            },
+            data,
         });
     };
 
