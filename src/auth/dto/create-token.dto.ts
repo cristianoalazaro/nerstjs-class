@@ -1,4 +1,4 @@
-import { IsDateString, IsEmail, IsNumber, IsOptional, IsString, IsStrongPassword } from "class-validator";
+/*import { IsDateString, IsEmail, IsNumber, IsOptional, IsString, IsStrongPassword } from "class-validator";
 
 export class CreateTokenDTO {
   @IsNumber()
@@ -17,9 +17,9 @@ export class CreateTokenDTO {
     minSymbols: 0,
     minUppercase: 0,
   })
-  password: string;
+  password: string;*/
   
-  @IsOptional()
+  /*@IsOptional()
   @IsDateString()
-  birthAt: string = null;
-}
+  birthAt: string = null;*/
+//}

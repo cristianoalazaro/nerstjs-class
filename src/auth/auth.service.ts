@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateTokenDTO } from "./dto/create-token.dto";
 import { CreateUserDTO } from "src/user/dto/create-user.dto";
 import { UserService } from "src/user/user.service";
 import { AuthRegisterDTO } from "./dto/auth-register.dto";
+import { User } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -14,7 +14,7 @@ export class AuthService {
         private readonly userService: UserService,
     ) {}
 
-    async createToken(user: CreateTokenDTO) {
+    async createToken(user: User) {
         return {
             accessToken: this.jwtService.sign({
                 id: user.id,
@@ -28,8 +28,17 @@ export class AuthService {
         }
     };
 
-    async checkToken() {
-        //return
+    checkToken(token: string) {
+        try {
+            const data = this.jwtService.verify(token, {
+                audience: 'users',
+                issuer: 'login',
+            });
+
+            return data;
+        } catch(e) {
+            return new BadRequestException(e);
+        }
     };
 
     async login(email: string, password: string) {
@@ -84,5 +93,14 @@ export class AuthService {
         const user = await this.userService.create(data);   
 
         return this.createToken(user);
+    };
+
+    isValidToken(token: string) {
+        try {
+            this.checkToken(token);
+            return true;
+        } catch(e) {
+            return false;
+        }
     };
 }
