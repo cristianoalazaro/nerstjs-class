@@ -86,6 +86,9 @@ $ npx prisma init --datasource-provider mysql
 # Create and execute migration 
 $ npx prisma migrate dev --name <nome_migrate>
 
+#Execute migrations
+$ npx prisma migrate dev
+
 # Pull from database
 npx prisma db pull
 

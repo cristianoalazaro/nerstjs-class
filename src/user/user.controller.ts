@@ -19,6 +19,7 @@ import { RoleGuard } from 'src/guards/role.guard';
 import { AuthGuard } from 'src/guards/auth.guard';
 
 @UseGuards(AuthGuard, RoleGuard)
+@Roles(Role.Admin)
 //@UseInterceptors(LogInterceptor)
 @Controller('users')
 export class UserController {
@@ -32,19 +33,16 @@ export class UserController {
   }
 
   @Get()
-  @Roles(Role.Admin)
   async getAll() {
     return this.userService.getAll();
   }
 
   @Get(':id')
-  @Roles(Role.Admin)
   async getOne(@ParamId() id: number) {
     return this.userService.getById(id);
   }
 
   @Put(':id')
-  @Roles(Role.Admin)
   async update(
     @Body() body: UpdatePutUserDTO,
     @ParamId() id: number,
@@ -53,7 +51,6 @@ export class UserController {
   }
 
   @Patch(':id')
-  @Roles(Role.Admin)
   async updatePartial(
     @Body() body: UpdatePatchUserDTO,
     @ParamId() id: number,
@@ -62,7 +59,6 @@ export class UserController {
   }
 
   @Delete(':id')
-  @Roles(Role.Admin)
   async delete(@ParamId() id: number) {
     return await this.userService.delete(id);
   }

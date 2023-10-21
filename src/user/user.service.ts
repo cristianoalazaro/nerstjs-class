@@ -3,6 +3,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -10,10 +11,12 @@ export class UserService {
 
     async create(data: CreateUserDTO) {
         //const { name, email, password, birthAt, role } = data;
-        let date: Date;
         if (data.birthAt) {
-            date = new Date(data.birthAt)
-        }
+            data.birthAt = new Date(data.birthAt).toISOString();
+        };
+
+
+        data.password = await this.generateHashPassword(data.password);
 
         return await this.prisma.user.create({
             data,
@@ -39,6 +42,8 @@ export class UserService {
 
         data.birthAt = data.birthAt ? new Date(data.birthAt).toISOString() : null;
 
+        data.password = await this.generateHashPassword(data.password);
+
         return await this.prisma.user.update({
             data,
             where: {
@@ -51,7 +56,10 @@ export class UserService {
         await this.exists(id);
 
         data.birthAt = data.birthAt ? new Date(data.birthAt).toISOString() : null;
-        console.log(data);
+        
+        if (data.password) {
+            data.password = await this.generateHashPassword(data.password);
+        };
 
         return await this.prisma.user.update({
             data,
@@ -75,5 +83,11 @@ export class UserService {
         })) {
             throw new NotFoundException(`User ${id} not exist!`);
         }
+    };
+
+    async generateHashPassword (password: string) {
+        const salt = await bcrypt.genSalt();
+
+        return await bcrypt.hash(password, salt);
     }
 }
