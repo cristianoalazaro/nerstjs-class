@@ -1,4 +1,6 @@
-import { BadRequestException, Body, Controller, Post, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, ParseFilePipe, Post, UploadedFile, UploadedFiles, 
+    UseFilters, UseGuards, UseInterceptors, FileTypeValidator, MaxFileSizeValidator 
+} from "@nestjs/common";
 import { AuthLoginDTO } from "./dto/auth-login.dto";
 import { AuthRegisterDTO } from "./dto/auth-register.dto";
 import { AuthForgetDTO } from "./dto/auth-forget.dto";
@@ -7,7 +9,7 @@ import { UserService } from "src/user/user.service";
 import { AuthService } from "./auth.service";
 import { AuthGuard } from "src/guards/auth.guard";
 import { User } from "src/decorators/user.decorator";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { join } from "path";
 import { FileService } from "src/file/file.service";
 
@@ -43,7 +45,10 @@ export class AuthController {
     @Post('photo')
     @UseInterceptors(FileInterceptor('file'))
     @UseGuards(AuthGuard)
-    async uploadPhoto(@User() user, @UploadedFile() photo: Express.Multer.File) {
+    async uploadPhoto(@User() user, @UploadedFile( new ParseFilePipe({
+        validators: [new FileTypeValidator({fileType: 'image/jpeg'}),
+            new MaxFileSizeValidator({maxSize: 1024 * 100})]
+    })) photo: Express.Multer.File) {
         const path = join(__dirname, '..', '..', 'storage', 'photos', `photo-${user.id}.jpg`);
 
         try {
@@ -53,5 +58,18 @@ export class AuthController {
         }
         
         return { success: true };
-    }
-}
+    };
+
+    @Post('photos')
+    @UseInterceptors(FilesInterceptor('files'))
+    @UseGuards(AuthGuard)
+    async uploadPhotos(@User() user, @UploadedFiles() photos: Array<Express.Multer.File>) {
+        const path = join (__dirname, '..', '..', 'storage', 'photos');
+
+        try {
+            return await this.fileService.uploadFiles(path, photos);
+        } catch(e) {
+            throw new BadRequestException(e);
+        };
+    };
+};
