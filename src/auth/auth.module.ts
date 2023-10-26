@@ -3,8 +3,10 @@ import { JwtModule } from "@nestjs/jwt";
 import { AuthController } from "./auth.controller";
 import { UserModule } from "src/user/user.module";
 import { AuthService } from "./auth.service";
-import { PrismaModule } from "src/prisma/prisma.module";
+//import { PrismaModule } from "src/prisma/prisma.module";
 import { FileModule } from "src/file/file.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { UserEntity } from "src/user/entity/user.entity";
 
 @Module({
     imports: [
@@ -15,7 +17,8 @@ import { FileModule } from "src/file/file.module";
             }
         }),
         forwardRef(() => UserModule ),
-        PrismaModule,
+        //PrismaModule,
+        TypeOrmModule.forFeature([UserEntity]),
         FileModule,
     ],
     providers: [AuthService],

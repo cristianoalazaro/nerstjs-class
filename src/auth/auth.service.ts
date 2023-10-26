@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { PrismaService } from "src/prisma/prisma.service";
+//import { PrismaService } from "src/prisma/prisma.service";
 import { UserService } from "src/user/user.service";
 import { AuthRegisterDTO } from "./dto/auth-register.dto";
 import { User } from "@prisma/client";
@@ -11,7 +11,7 @@ import { MailerService } from "@nestjs-modules/mailer";
 export class AuthService {
     constructor(
         private readonly jwtService: JwtService,
-        private readonly prisma: PrismaService,
+        //private readonly prisma: PrismaService,
         private readonly userService: UserService,
         private readonly mailer: MailerService,
     ) { }
@@ -44,11 +44,11 @@ export class AuthService {
     };
 
     async login(email: string, password: string) {
-        const user = await this.prisma.user.findFirst({
+        /*const user = await this.prisma.user.findFirst({
             where: {
                 email,
             }
-        });
+        });*/
 
         if (!user) {
             throw new UnauthorizedException('Incorrect email and/or password!');
@@ -62,11 +62,11 @@ export class AuthService {
     };
 
     async forget(email: string) {
-        const user = await this.prisma.user.findFirst({
+        /*const user = await this.prisma.user.findFirst({
             where: {
                 email,
             }
-        });
+        });*/
 
         if (!user) {
             throw new UnauthorizedException('Incorrect email!');
@@ -107,14 +107,14 @@ export class AuthService {
 
             const hash = await this.userService.generateHashPassword(password);
 
-            const user = await this.prisma.user.update({
+            /*const user = await this.prisma.user.update({
                 where: {
                     id: data.id,
                 },
                 data: {
                     password: hash,
                 }
-            });
+            });*/
 
             return this.createToken(user);
         } catch (e) {
