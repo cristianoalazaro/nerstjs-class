@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateUserDTO } from "src/user/dto/create-user.dto";
 import { UserService } from "src/user/user.service";
 import { AuthRegisterDTO } from "./dto/auth-register.dto";
 import { User } from "@prisma/client";
 import * as bcrypt from 'bcrypt';
+import { MailerService } from "@nestjs-modules/mailer";
 
 @Injectable()
 export class AuthService {
@@ -13,14 +13,15 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly prisma: PrismaService,
         private readonly userService: UserService,
-    ) {}
+        private readonly mailer: MailerService,
+    ) { }
 
     async createToken(user: User) {
         return {
             accessToken: this.jwtService.sign({
                 id: user.id,
                 name: user.name,
-            },{
+            }, {
                 subject: String(user.id),
                 issuer: 'login',
                 expiresIn: process.env.AUTH_EXPIRES_IN,
@@ -37,7 +38,7 @@ export class AuthService {
             });
 
             return data;
-        } catch(e) {
+        } catch (e) {
             return new BadRequestException(e);
         }
     };
@@ -67,37 +68,67 @@ export class AuthService {
             }
         });
 
-        if (user) {
+        if (!user) {
             throw new UnauthorizedException('Incorrect email!');
         };
 
-        //TO DO: Send an email to change the password
+        const token = this.jwtService.sign({
+            id: user.id
+        }, {
+            expiresIn: '30 minutes',
+            subject: String(user.id),
+            issuer: 'forget',
+            audience: 'users',
+        })
+
+        await this.mailer.sendMail({
+            subject: 'Recuperação de Senha',
+            to: 'cristianoalazaro@hotmail.com',
+            template: 'forget',
+            context: {
+                name: user.name,
+                token,
+            }
+        });
 
         return true;
     };
 
     async reset(password: string, token: string) {
-        //TOD DO: Validate the token
+        try {
+            const data = this.jwtService.verify(token, {
+                issuer: 'forget',
+                audience: 'users',
+            });
 
-        const id =  0; //It'll be extracted from the token
+            if (isNaN(Number(data.id))) {
+                throw new BadRequestException('Invalid token!');
+            };
 
-        const user = await this.prisma.user.update({
-            where: {
-                id,
-            },
-            data: {
-                password,
-            }
-        });
+            const hash = await this.userService.generateHashPassword(password);
 
-        return this.createToken(user);
+            const user = await this.prisma.user.update({
+                where: {
+                    id: data.id,
+                },
+                data: {
+                    password: hash,
+                }
+            });
+
+            return this.createToken(user);
+        } catch (e) {
+            return new BadRequestException(e);
+        }
+
+
     };
 
     async register(data: AuthRegisterDTO) {
 
-        const user = await this.userService.create(data);   
-        
-        
+        const user = await this.userService.create(data);
+
+
         return this.createToken(user);
     };
 
@@ -105,7 +136,7 @@ export class AuthService {
         try {
             this.checkToken(token);
             return true;
-        } catch(e) {
+        } catch (e) {
             return false;
         }
     };

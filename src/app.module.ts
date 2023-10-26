@@ -10,16 +10,21 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 
 @Module({
   imports: [
-    UserModule, 
+    UserModule,
     AuthModule,
     ThrottlerModule.forRoot([{
       ttl: 60000,
       limit: 200,
     }]),
+    //email configuration created on https://ethereal.email/
     MailerModule.forRoot({
-      transport: 'smtps://user@domain.com:pass@smtp.domain.com',
-      defaults: {
-        from: '"nest-modules" <modules@nestjs.com>',
+      transport: {
+        host: 'smtp.ethereal.email',
+        port: 587,
+        auth: {
+          user: 'dorcas28@ethereal.email',
+          pass: 'CzKz1vxZZgtkMuk65g'
+        }
       },
       template: {
         dir: __dirname + '/templates',
@@ -37,7 +42,7 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
       provide: APP_GUARD,
       useClass: ThrottlerGuard
     },
-    
+
   ],
 })
-export class AppModule {}
+export class AppModule { }
