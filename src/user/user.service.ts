@@ -4,19 +4,27 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
 import * as bcrypt from 'bcrypt';
+import { Repository } from "typeorm";
+import { UserEntity } from "./entity/user.entity";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class UserService {
     //constructor( private readonly prisma: PrismaService ) {}
+    constructor(
+        @InjectRepository(UserEntity)
+        private readonly userRepository: Repository<UserEntity>
+    ) {};
 
     async create(data: CreateUserDTO) {
         //const { name, email, password, birthAt, role } = data;
         if (data.birthAt) {
             data.birthAt = new Date(data.birthAt).toISOString();
         };
-
-
+        
         data.password = await this.generateHashPassword(data.password);
+
+        return this.userRepository.create(data);
 
         /*return await this.prisma.user.create({
             data,

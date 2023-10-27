@@ -24,6 +24,6 @@ export class UserEntity {
     @UpdateDateColumn()
     updatedAt?: string;
 
-    @Column({ enum: Role, default: Role.User })
+    @Column()
     role?: number;
 }

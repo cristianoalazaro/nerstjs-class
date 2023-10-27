@@ -6,12 +6,17 @@ import { AuthRegisterDTO } from "./dto/auth-register.dto";
 import { User } from "@prisma/client";
 import * as bcrypt from 'bcrypt';
 import { MailerService } from "@nestjs-modules/mailer";
+import { Repository } from "typeorm";
+import { UserEntity } from "src/user/entity/user.entity";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly jwtService: JwtService,
         //private readonly prisma: PrismaService,
+        @InjectRepository(UserEntity)
+        private readonly userRepository: Repository<UserEntity>,
         private readonly userService: UserService,
         private readonly mailer: MailerService,
     ) { }
@@ -50,6 +55,12 @@ export class AuthService {
             }
         });*/
 
+        const user = await this.userRepository.findOne({
+            where: {
+                email,
+            }
+        });
+
         if (!user) {
             throw new UnauthorizedException('Incorrect email and/or password!');
         };
@@ -68,7 +79,7 @@ export class AuthService {
             }
         });*/
 
-        if (!user) {
+        /*if (!user) {
             throw new UnauthorizedException('Incorrect email!');
         };
 
@@ -89,7 +100,7 @@ export class AuthService {
                 name: user.name,
                 token,
             }
-        });
+        });*/
 
         return true;
     };
@@ -116,7 +127,7 @@ export class AuthService {
                 }
             });*/
 
-            return this.createToken(user);
+            //return this.createToken(user);
         } catch (e) {
             return new BadRequestException(e);
         }
@@ -129,7 +140,7 @@ export class AuthService {
         const user = await this.userService.create(data);
 
 
-        return this.createToken(user);
+        //return this.createToken(user);
     };
 
     isValidToken(token: string) {
