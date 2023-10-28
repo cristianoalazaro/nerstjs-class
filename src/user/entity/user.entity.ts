@@ -1,3 +1,4 @@
+import { IsEnum, IsOptional, isEnum } from "class-validator";
 import { Role } from "src/enums/role.enum";
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
@@ -24,6 +25,7 @@ export class UserEntity {
     @UpdateDateColumn()
     updatedAt?: string;
 
-    @Column()
-    role?: number;
+    @IsOptional()
+    @IsEnum(Role)
+    role?: Role;
 }

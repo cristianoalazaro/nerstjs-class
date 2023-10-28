@@ -1,5 +1,6 @@
 import { IsDateString, IsEmail, IsEnum, IsOptional, IsString, IsStrongPassword } from 'class-validator';
 import { Role } from 'src/enums/role.enum';
+import { Column } from 'typeorm';
 
 export class CreateUserDTO {
   @IsString()
@@ -21,7 +22,8 @@ export class CreateUserDTO {
   @IsDateString()
   birthAt: string = null;
 
-  @IsOptional()
-  @IsEnum(Role)
-  role?: number;
+  @Column({
+    default: Role.User
+  })
+  role?: Role;
 }

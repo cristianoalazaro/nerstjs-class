@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 //import { PrismaService } from "src/prisma/prisma.service";
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { Repository } from "typeorm";
 import { UserEntity } from "./entity/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Role } from "src/enums/role.enum";
 
 @Injectable()
 export class UserService {
@@ -14,23 +15,27 @@ export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>
-    ) {};
+    ) { };
 
     async create(data: CreateUserDTO) {
-        //const { name, email, password, birthAt, role } = data;
-        if (data.birthAt) {
-            data.birthAt = new Date(data.birthAt).toISOString();
-        };
-        
-        data.password = await this.generateHashPassword(data.password);
+        try {
+            //const { name, email, password, birthAt, role } = data;
+            if (data.birthAt) {
+                data.birthAt = new Date(data.birthAt).toISOString();
+            };
 
-        this.userRepository.create(data);
+            data.password = await this.generateHashPassword(data.password);
 
-        return this.userRepository.save(data);
+            this.userRepository.create(data);
 
-        /*return await this.prisma.user.create({
-            data,
-        });*/
+            return this.userRepository.save(data);
+
+            /*return await this.prisma.user.create({
+                data,
+            });*/
+        } catch (e) {
+            throw new BadRequestException(e)
+        }
     };
 
     async getAll() {
@@ -40,7 +45,7 @@ export class UserService {
     };
 
     async getById(id: number) {
-        
+
         await this.exists(id);
 
         /*return await this.prisma.user.findUnique({
@@ -68,7 +73,7 @@ export class UserService {
 
         await this.userRepository.update(
             id,
-            data,            
+            data,
         );
 
         return await this.getById(id);
@@ -78,7 +83,7 @@ export class UserService {
         await this.exists(id);
 
         data.birthAt = data.birthAt ? new Date(data.birthAt).toISOString() : null;
-        
+
         if (data.password) {
             data.password = await this.generateHashPassword(data.password);
         };
@@ -102,7 +107,7 @@ export class UserService {
         await this.exists(id);
 
         //return await this.prisma.user.delete({ where: { id } })
-        return await this.userRepository.delete( id );
+        return await this.userRepository.delete(id);
     };
 
     async exists(id: number) {
@@ -110,8 +115,8 @@ export class UserService {
             where: {
                 id,
             }
-        }))*/ 
-        
+        }))*/
+
         if (await this.userRepository.exist({
             where: {
                 id,
@@ -123,7 +128,7 @@ export class UserService {
         }
     };
 
-    async generateHashPassword (password: string) {
+    async generateHashPassword(password: string) {
         const salt = await bcrypt.genSalt();
 
         return await bcrypt.hash(password, salt);
