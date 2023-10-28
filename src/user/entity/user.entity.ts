@@ -17,15 +17,14 @@ export class UserEntity {
     password: string;
 
     @Column({ type: 'date', nullable: true })
-    birthAt?: string;
+    birthAt: Date;
 
     @CreateDateColumn()
     createdAt: string;
 
     @UpdateDateColumn()
-    updatedAt?: string;
+    updatedAt: string;
 
-    @IsOptional()
-    @IsEnum(Role)
-    role?: Role;
+    @Column({ default: Role.User })
+    role: Role;
 }

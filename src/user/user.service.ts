@@ -20,6 +20,12 @@ export class UserService {
     async create(data: CreateUserDTO) {
         try {
             //const { name, email, password, birthAt, role } = data;
+            const user = await this.userRepository.findOneBy({ email: data.email });
+
+            if (user) {
+                throw new BadRequestException('Email already exists.');
+            }
+
             if (data.birthAt) {
                 data.birthAt = new Date(data.birthAt).toISOString();
             };
@@ -54,15 +60,16 @@ export class UserService {
             },
         });*/
 
-        return await this.userRepository.findOneBy({ id });
+        const user = await this.userRepository.findOneBy({ id });
+        console.log('userrr ', user)
+        return user;
     };
 
-    async update(data: UpdatePutUserDTO, id: number) {
+    async update({ name, email, password, birthAt, role }: UpdatePutUserDTO, id: number) {
         await this.exists(id);
 
-        data.birthAt = data.birthAt ? new Date(data.birthAt).toISOString() : null;
 
-        data.password = await this.generateHashPassword(data.password);
+        password = await this.generateHashPassword(password);
 
         /*return await this.prisma.user.update({
             data,
@@ -73,19 +80,23 @@ export class UserService {
 
         await this.userRepository.update(
             id,
-            data,
+            {
+                name,
+                email,
+                password,
+                birthAt: birthAt ? new Date(birthAt) : null,
+                role,
+            },
         );
 
         return await this.getById(id);
     };
 
-    async updatePartial(data: UpdatePatchUserDTO, id: number) {
+    async updatePartial({name, email, password, birthAt, role}: UpdatePatchUserDTO, id: number) {
         await this.exists(id);
 
-        data.birthAt = data.birthAt ? new Date(data.birthAt).toISOString() : null;
-
-        if (data.password) {
-            data.password = await this.generateHashPassword(data.password);
+        if (password) {
+            password = await this.generateHashPassword(password);
         };
 
         /*return await this.prisma.user.update({
@@ -97,7 +108,13 @@ export class UserService {
 
         await this.userRepository.update(
             id,
-            data
+            {
+                name,
+                email,
+                password,
+                birthAt: birthAt ? new Date(birthAt) : null,
+                role,
+            }
         );
 
         return await this.userRepository.findOneBy({ id });

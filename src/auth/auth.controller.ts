@@ -49,6 +49,7 @@ export class AuthController {
         validators: [new FileTypeValidator({fileType: 'image/jpeg'}),
             new MaxFileSizeValidator({maxSize: 1024 * 100})]
     })) photo: Express.Multer.File) {
+        console.log('aqui')
         const path = join(__dirname, '..', '..', 'storage', 'photos', `photo-${user.id}.jpg`);
 
         try {

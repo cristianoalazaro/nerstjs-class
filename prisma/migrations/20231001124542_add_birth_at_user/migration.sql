@@ -6,7 +6,7 @@ CREATE TABLE `users` (
     `password` VARCHAR(127) NOT NULL,
     `birthAt` DATE NOT NULL,
     `createdAt` TIMESTAMP(0) NULL DEFAULT (now()),
-    `updateAt` TIMESTAMP(0) NULL,
+    `updatedAt` TIMESTAMP(0) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
