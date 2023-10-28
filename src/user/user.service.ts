@@ -24,7 +24,9 @@ export class UserService {
         
         data.password = await this.generateHashPassword(data.password);
 
-        return this.userRepository.create(data);
+        this.userRepository.create(data);
+
+        return this.userRepository.save(data);
 
         /*return await this.prisma.user.create({
             data,
@@ -33,9 +35,12 @@ export class UserService {
 
     async getAll() {
         //return await this.prisma.user.findMany();
+
+        return await this.userRepository.find();
     };
 
     async getById(id: number) {
+        
         await this.exists(id);
 
         /*return await this.prisma.user.findUnique({
@@ -43,6 +48,8 @@ export class UserService {
                 id,
             },
         });*/
+
+        return await this.userRepository.findOneBy({ id });
     };
 
     async update(data: UpdatePutUserDTO, id: number) {
@@ -58,6 +65,13 @@ export class UserService {
                 id,
             },
         });*/
+
+        await this.userRepository.update(
+            id,
+            data,            
+        );
+
+        return await this.getById(id);
     };
 
     async updatePartial(data: UpdatePatchUserDTO, id: number) {
@@ -75,12 +89,20 @@ export class UserService {
                 id,
             },
         });*/
+
+        await this.userRepository.update(
+            id,
+            data
+        );
+
+        return await this.userRepository.findOneBy({ id });
     };
 
     async delete(id: number) {
         await this.exists(id);
 
         //return await this.prisma.user.delete({ where: { id } })
+        return await this.userRepository.delete( id );
     };
 
     async exists(id: number) {
@@ -88,9 +110,17 @@ export class UserService {
             where: {
                 id,
             }
+        }))*/ 
+        
+        if (await this.userRepository.exist({
+            where: {
+                id,
+            }
         })) {
+            return true
+        } else {
             throw new NotFoundException(`User ${id} not exist!`);
-        }*/
+        }
     };
 
     async generateHashPassword (password: string) {

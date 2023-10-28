@@ -11,7 +11,7 @@ import { UserEntity } from "src/user/entity/user.entity";
 @Module({
     imports: [
         JwtModule.register({
-            secret: process.env.AUTH_SECRET,
+            secret: String(process.env.AUTH_SECRET),
             signOptions:{
                 expiresIn: process.env.AUTH_EXPIRES_IN,
             }

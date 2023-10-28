@@ -3,7 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 //import { PrismaService } from "src/prisma/prisma.service";
 import { UserService } from "src/user/user.service";
 import { AuthRegisterDTO } from "./dto/auth-register.dto";
-import { User } from "@prisma/client";
+//import { User } from "@prisma/client";
 import * as bcrypt from 'bcrypt';
 import { MailerService } from "@nestjs-modules/mailer";
 import { Repository } from "typeorm";
@@ -21,7 +21,7 @@ export class AuthService {
         private readonly mailer: MailerService,
     ) { }
 
-    async createToken(user: User) {
+    async createToken(user: UserEntity) {
         return {
             accessToken: this.jwtService.sign({
                 id: user.id,
@@ -55,20 +55,16 @@ export class AuthService {
             }
         });*/
 
-        const user = await this.userRepository.findOne({
-            where: {
-                email,
-            }
-        });
-
+        const user = await this.userRepository.findOneBy({ email });
+        
         if (!user) {
             throw new UnauthorizedException('Incorrect email and/or password!');
         };
-
+        
         if (!await bcrypt.compare(password, user.password)) {
             throw new UnauthorizedException('Incorrect email and/or password!');
         }
-
+        
         return this.createToken(user);
     };
 
@@ -79,7 +75,9 @@ export class AuthService {
             }
         });*/
 
-        /*if (!user) {
+        const user = await this.userRepository.findOneBy({ email });
+
+        if (!user) {
             throw new UnauthorizedException('Incorrect email!');
         };
 
@@ -100,7 +98,7 @@ export class AuthService {
                 name: user.name,
                 token,
             }
-        });*/
+        });
 
         return true;
     };
@@ -127,20 +125,26 @@ export class AuthService {
                 }
             });*/
 
-            //return this.createToken(user);
+            await this.userRepository.update(
+                Number(data.id),
+                {
+                    password: hash,
+                }
+            );
+
+            const user = await this.userRepository.findOneBy({ id: Number(data.id) })
+            
+            return this.createToken(user);
         } catch (e) {
             return new BadRequestException(e);
         }
-
-
     };
 
     async register(data: AuthRegisterDTO) {
 
         const user = await this.userService.create(data);
 
-
-        //return this.createToken(user);
+        return this.createToken(user);
     };
 
     isValidToken(token: string) {
