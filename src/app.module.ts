@@ -48,7 +48,6 @@ import { ConfigModule } from '@nestjs/config';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [ UserEntity ],
       migrations: [],
       synchronize: process.env.ENV === 'development' ? true : false,
     })
