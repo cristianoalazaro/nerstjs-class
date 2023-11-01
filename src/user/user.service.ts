@@ -19,12 +19,16 @@ export class UserService {
 
     async create(data: CreateUserDTO) {
         try {
+            console.log('aqui ', data)
+            
             //const { name, email, password, birthAt, role } = data;
             const user = await this.userRepository.findOneBy({ email: data.email });
+            console.log('aqui2 ', data)
 
             if (user) {
                 throw new BadRequestException('Email already exists.');
             }
+
 
             if (data.birthAt) {
                 data.birthAt = new Date(data.birthAt).toISOString();

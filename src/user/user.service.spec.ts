@@ -1,20 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing"
-import { UserService } from "./user.service"
-import { userRepositoryMock } from "../testing/user.repository.mock";
-import { CreateUserDTO } from "./dto/create-user.dto";
-import { UserEntity } from "./entity/user.entity";
 
-const userEntityList: UserEntity[] = [
-    {
-        id: 1,
-        name: 'Usuário teste',
-        email: 'usuario@teste.com',
-        password: '123456',
-        birthAt: new Date('1900-01-01'),
-        role: 1,
-        createdAt: '2023-10-31',
-    }
-]
+import { UserService } from "./user.service"
+import { userRepositoryMock } from "../testing/user-repository.mock";
+import { userEntityList } from "../testing/user-entity-list.mock";
+import { createUserDto } from "../testing/create-user-dto.mock";
 
 describe('UserService', () => {
     let userService: UserService;
@@ -36,17 +25,24 @@ describe('UserService', () => {
 
     describe('Create', () => {
         it('method create', async () => {
-            const data: CreateUserDTO = {
-                name: 'Usuário teste',
-                email: 'usuario@teste.com',
-                password: '123456',
-                birthAt: '1900-01-01',
-                role: 1,
-            }
-            const result = await userService.create(data);
+            const result = await userService.create(createUserDto);
+
+            expect(result).toEqual(userEntityList[0]);
         })
     });
-    describe('Read', () => {});
+    describe('Read', () => {
+        it('method getAll', async () => {
+            const result = await userService.getAll();
+
+            expect(result).toEqual(userEntityList);
+        });
+
+        it('method getById', async () => {
+            const result = await userService.getById(1);
+
+            expect(result).toEqual(userEntityList[0]);
+        });
+    });
     describe('Update', () => {});
     describe('Delete', () => {});
 });
