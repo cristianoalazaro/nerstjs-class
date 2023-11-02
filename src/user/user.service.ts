@@ -22,8 +22,12 @@ export class UserService {
             console.log('aqui ', data)
             
             //const { name, email, password, birthAt, role } = data;
-            const user = await this.userRepository.findOneBy({ email: data.email });
-            console.log('aqui2 ', data)
+
+            const user = await this.userRepository.exist({
+                where: {
+                    email: data.email
+                },
+            });
 
             if (user) {
                 throw new BadRequestException('Email already exists.');
@@ -65,7 +69,6 @@ export class UserService {
         });*/
 
         const user = await this.userRepository.findOneBy({ id });
-        console.log('userrr ', user)
         return user;
     };
 
@@ -128,7 +131,9 @@ export class UserService {
         await this.exists(id);
 
         //return await this.prisma.user.delete({ where: { id } })
-        return await this.userRepository.delete(id);
+        await this.userRepository.delete(id);
+
+        return true;
     };
 
     async exists(id: number) {
