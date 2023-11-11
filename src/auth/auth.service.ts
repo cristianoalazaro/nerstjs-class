@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 //import { PrismaService } from "src/prisma/prisma.service";
-import { UserService } from "src/user/user.service";
+import { UserService } from "../user/user.service";
 import { AuthRegisterDTO } from "./dto/auth-register.dto";
 //import { User } from "@prisma/client";
 import * as bcrypt from 'bcrypt';
 import { MailerService } from "@nestjs-modules/mailer";
 import { Repository } from "typeorm";
-import { UserEntity } from "src/user/entity/user.entity";
+import { UserEntity } from "../user/entity/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
@@ -21,7 +21,7 @@ export class AuthService {
         private readonly mailer: MailerService,
     ) { }
 
-    async createToken(user: UserEntity) {
+    createToken(user: UserEntity) {
         return {
             accessToken: this.jwtService.sign({
                 id: user.id,
@@ -61,7 +61,7 @@ export class AuthService {
             throw new UnauthorizedException('Incorrect email and/or password!');
         };
         
-        if (!await bcrypt.compare(password, user.password)) {
+        if (!(await bcrypt.compare(password, user.password))) {
             throw new UnauthorizedException('Incorrect email and/or password!');
         }
         
@@ -88,7 +88,9 @@ export class AuthService {
             subject: String(user.id),
             issuer: 'forget',
             audience: 'users',
-        })
+        });
+
+        console.log(token);
 
         await this.mailer.sendMail({
             subject: 'Recuperação de Senha',
