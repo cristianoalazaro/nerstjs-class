@@ -90,8 +90,6 @@ export class AuthService {
             audience: 'users',
         });
 
-        console.log(token);
-
         await this.mailer.sendMail({
             subject: 'Recuperação de Senha',
             to: 'cristianoalazaro@hotmail.com',
@@ -143,6 +141,8 @@ export class AuthService {
     };
 
     async register(data: AuthRegisterDTO) {
+
+        delete data.role;
 
         const user = await this.userService.create(data);
 
