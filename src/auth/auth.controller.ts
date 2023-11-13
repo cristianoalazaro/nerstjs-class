@@ -49,10 +49,10 @@ export class AuthController {
         validators: [new FileTypeValidator({fileType: 'image/jpeg'}),
             new MaxFileSizeValidator({maxSize: 1024 * 100})]
     })) photo: Express.Multer.File) {
-        const path = join(__dirname, '..', '..', 'storage', 'photos', `photo-${user.id}.jpg`);
+        const filename = `photo-${user.id}.jpg`;
 
         try {
-            await this.fileService.upload(path, photo);
+            await this.fileService.upload(filename, photo);
         } catch(e) {
             throw new BadRequestException(e); 
         }
@@ -64,10 +64,10 @@ export class AuthController {
     @UseInterceptors(FilesInterceptor('files'))
     @UseGuards(AuthGuard)
     async uploadPhotos(@User() user, @UploadedFiles() photos: Array<Express.Multer.File>) {
-        const path = join (__dirname, '..', '..', 'storage', 'photos');
+        const filename = `photo-${user.id}.jpg`;
 
         try {
-            return await this.fileService.uploadFiles(path, photos);
+            return await this.fileService.uploadFiles(filename, photos);
         } catch(e) {
             throw new BadRequestException(e);
         };
