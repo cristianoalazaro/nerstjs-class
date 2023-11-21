@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDTO } from './create-user.dto';
 import { IsDateString, IsEmail, IsOptional, IsString, IsStrongPassword } from 'class-validator';
 import { Column } from 'typeorm';
-import { Role } from 'src/enums/role.enum';
+import { Role } from '../../enums/role.enum';
 
 export class UpdatePatchUserDTO {
     @IsOptional()
