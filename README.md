@@ -98,3 +98,6 @@ $ npx prisma generate
 # Format models
 $ npx prisma format
 ```
+
+## Database for test e2e
+  To execute test e2e you need to create new database called api_test before

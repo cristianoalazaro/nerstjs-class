@@ -14,7 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: process.env.ENV === 'test' ? '.env.test' : '.env',
       isGlobal: true,
     }),
     UserModule,

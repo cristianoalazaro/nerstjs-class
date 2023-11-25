@@ -37,3 +37,4 @@ lerna-debug.log*
 # others
 mysql_data
 .env
+.env.test

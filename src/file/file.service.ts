@@ -12,7 +12,9 @@ export class FileService {
     async upload (filename: string, file: Express.Multer.File)  {
         const path: PathLike = join(this.getDestinationPath(), filename);
         
-        return await writeFile(path, file.buffer);
+        await writeFile(path, file.buffer);
+
+        return path;
     };
     
     async uploadFiles (filename: string, files: Express.Multer.File[]) {
@@ -22,6 +24,6 @@ export class FileService {
             writeFile(path, file.buffer);
         });
 
-        return arrayFiles;
+        return path;
     }
 }

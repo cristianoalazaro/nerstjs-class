@@ -1,23 +1,21 @@
 import { BadRequestException, Body, Controller, ParseFilePipe, Post, UploadedFile, UploadedFiles, 
-    UseFilters, UseGuards, UseInterceptors, FileTypeValidator, MaxFileSizeValidator 
+    UseGuards, UseInterceptors, FileTypeValidator, MaxFileSizeValidator 
 } from "@nestjs/common";
 import { AuthLoginDTO } from "./dto/auth-login.dto";
 import { AuthRegisterDTO } from "./dto/auth-register.dto";
 import { AuthForgetDTO } from "./dto/auth-forget.dto";
 import { AuthResetDTO } from "./dto/auth-reset.dto";
-import { UserService } from "src/user/user.service";
 import { AuthService } from "./auth.service";
-import { AuthGuard } from "src/guards/auth.guard";
-import { User } from "src/decorators/user.decorator";
+import { AuthGuard } from "../guards/auth.guard";
+import { User } from "../decorators/user.decorator";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
-import { join } from "path";
-import { FileService } from "src/file/file.service";
+import { FileService } from "../file/file.service";
+import { UserEntity } from "../user/entity/user.entity";
 
 @Controller('auth')
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
-        private readonly userService: UserService,
         private readonly fileService: FileService,
     ) {}
 
@@ -45,7 +43,7 @@ export class AuthController {
     @Post('photo')
     @UseInterceptors(FileInterceptor('file'))
     @UseGuards(AuthGuard)
-    async uploadPhoto(@User() user, @UploadedFile( new ParseFilePipe({
+    async uploadPhoto(@User() user: UserEntity, @UploadedFile( new ParseFilePipe({
         validators: [new FileTypeValidator({fileType: 'image/jpeg'}),
             new MaxFileSizeValidator({maxSize: 1024 * 100})]
     })) photo: Express.Multer.File) {
@@ -63,13 +61,15 @@ export class AuthController {
     @Post('photos')
     @UseInterceptors(FilesInterceptor('files'))
     @UseGuards(AuthGuard)
-    async uploadPhotos(@User() user, @UploadedFiles() photos: Array<Express.Multer.File>) {
+    async uploadPhotos(@User() user: UserEntity, @UploadedFiles() photos: Array<Express.Multer.File>) {
         const filename = `photo-${user.id}.jpg`;
 
         try {
-            return await this.fileService.uploadFiles(filename, photos);
+            await this.fileService.uploadFiles(filename, photos);
         } catch(e) {
             throw new BadRequestException(e);
         };
+
+        return {success: true}
     };
 };

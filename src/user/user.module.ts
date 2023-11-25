@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
-import { UserIdCheckMiddleware } from 'src/middlewares/user-id-check.middleware';
+import { UserIdCheckMiddleware } from '../middlewares/user-id-check.middleware';
 //import { PrismaModule } from 'src/prisma/prisma.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
