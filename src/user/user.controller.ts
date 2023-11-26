@@ -6,7 +6,7 @@ import {
   Patch,
   Post,
   Put,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePatchUserDTO } from './dto/update-patch-user.dto';
@@ -24,7 +24,7 @@ import { AuthGuard } from '../guards/auth.guard';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  
+
   //@UseInterceptors(LogInterceptor)
   @Roles(Role.Admin)
   @Post()
@@ -43,18 +43,12 @@ export class UserController {
   }
 
   @Put(':id')
-  async update(
-    @Body() body: UpdatePutUserDTO,
-    @ParamId() id: number,
-  ) {
+  async update(@Body() body: UpdatePutUserDTO, @ParamId() id: number) {
     return await this.userService.update(body, id);
   }
 
   @Patch(':id')
-  async updatePartial(
-    @Body() body: UpdatePatchUserDTO,
-    @ParamId() id: number,
-  ) {
+  async updatePartial(@Body() body: UpdatePatchUserDTO, @ParamId() id: number) {
     return this.userService.updatePartial(body, id);
   }
 

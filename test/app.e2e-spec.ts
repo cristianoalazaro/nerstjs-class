@@ -3,14 +3,13 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { authRegisterDto } from '../src/testing/auth-register-dto.mock';
-import { authLoginDtoMock } from '../src/testing/auth-login-dto.mock';
 import datasource from '../typeorm/data-source';
 import { Role } from '../src/enums/role.enum';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-  let accessToken: string;
-  let userId: number;
+  //let accessToken: string;
+  //let userId: number;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -32,7 +31,7 @@ describe('AppController (e2e)', () => {
       .expect('Hello World!');
   });
 
-  it('register new user', async() => {
+  it('register new user', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/register')
       .send(authRegisterDto);
@@ -41,27 +40,26 @@ describe('AppController (e2e)', () => {
     //expect(typeof response.body.accesToken).toEqual('string');
   });
 
-  it('try to login with new user', async() => {
+  it('try to login with new user', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/login')
       .send({
         email: authRegisterDto.email,
-        password: authRegisterDto.password
+        password: authRegisterDto.password,
       });
 
-      expect(response.statusCode).toEqual(201);
-      expect(typeof response.body.accessToken).toEqual('string')
+    expect(response.statusCode).toEqual(201);
+    expect(typeof response.body.accessToken).toEqual('string');
   });
 
-  it('try to get users list without permission', async() => {
-    const response = await request(app.getHttpServer())
-      .get('/users')
+  it('try to get users list without permission', async () => {
+    const response = await request(app.getHttpServer()).get('/users');
 
     expect(response.statusCode).toEqual(403);
     expect(response.body.error).toEqual('Forbidden');
   });
 
-  it('changing user handling to admin', async() => {
+  it('changing user handling to admin', async () => {
     const ds = await datasource.initialize();
 
     const queryRunner = ds.createQueryRunner();
@@ -85,9 +83,8 @@ describe('AppController (e2e)', () => {
     expect(rows[0].role).toEqual(Role.Admin);
   });
 
-  it('trying get users with permission', async() => {
-    const response = await request(app.getHttpServer())
-      .get('/users');
+  it('trying get users with permission', async () => {
+    const response = await request(app.getHttpServer()).get('/users');
 
     expect(response.statusCode).toEqual(200);
     expect(response.body.length).not.toEqual(0);

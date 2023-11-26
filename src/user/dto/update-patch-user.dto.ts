@@ -1,11 +1,15 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUserDTO } from './create-user.dto';
-import { IsDateString, IsEmail, IsOptional, IsString, IsStrongPassword } from 'class-validator';
+import {
+  IsDateString,
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 import { Column } from 'typeorm';
 import { Role } from '../../enums/role.enum';
 
 export class UpdatePatchUserDTO {
-    @IsOptional()
+  @IsOptional()
   @IsString()
   name?: string;
 
@@ -29,7 +33,7 @@ export class UpdatePatchUserDTO {
 
   @IsOptional()
   @Column({
-    default: Role.User
+    default: Role.User,
   })
   role?: Role;
 }

@@ -19,10 +19,12 @@ import { ConfigModule } from '@nestjs/config';
     }),
     UserModule,
     AuthModule,
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 200,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 200,
+      },
+    ]),
     //email configuration created on https://ethereal.email/
     MailerModule.forRoot({
       transport: {
@@ -30,8 +32,8 @@ import { ConfigModule } from '@nestjs/config';
         port: 587,
         auth: {
           user: 'dorcas28@ethereal.email',
-          pass: 'CzKz1vxZZgtkMuk65g'
-        }
+          pass: 'CzKz1vxZZgtkMuk65g',
+        },
       },
       template: {
         dir: __dirname + '/templates',
@@ -51,16 +53,15 @@ import { ConfigModule } from '@nestjs/config';
       entities: [UserEntity],
       migrations: [],
       synchronize: process.env.ENV === 'development' ? true : false,
-    })
+    }),
   ],
   controllers: [AppController],
   providers: [
     AppService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
+      useClass: ThrottlerGuard,
     },
-
   ],
 })
-export class AppModule { }
+export class AppModule {}
