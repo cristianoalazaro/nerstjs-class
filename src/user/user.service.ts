@@ -19,27 +19,26 @@ export class UserService {
 
     async create(data: CreateUserDTO) {
         try {
-            console.log('aqui ', data)
             
             //const { name, email, password, birthAt, role } = data;
-
+            
             const user = await this.userRepository.exist({
                 where: {
                     email: data.email
                 },
             });
-
+            
             if (user) {
                 throw new BadRequestException('Email already exists.');
             }
-
-
+            
+            
             if (data.birthAt) {
                 data.birthAt = new Date(data.birthAt).toISOString();
             };
-
+            
             data.password = await this.generateHashPassword(data.password);
-
+            
             this.userRepository.create(data);
 
             return this.userRepository.save(data);

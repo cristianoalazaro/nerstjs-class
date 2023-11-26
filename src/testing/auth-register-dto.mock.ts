@@ -5,6 +5,6 @@ export const authRegisterDto: AuthRegisterDTO = {
     name: 'Usuário teste',
     email: 'usuario@teste.com',
     password: '123456',
-    birthAt: '1900-01-01',
-    role: Role.User,
+    birthAt: null,//'2011-10-05T14:48:00.000Z',
+    role: Role.User
 }
